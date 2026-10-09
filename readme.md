@@ -256,12 +256,14 @@ const user = new Schema({
   id: { type: { anyOf: [String, Number] } }
 })
 
-user.validate({ id: true }) // => [ValidationError: id must be of type String or Number.]
+const errors = user.validate({ id: true })
+errors[0].message //=> 'id must be of type String or Number.'
 ```
 
 Members can be constructors or type names like `'string'`, and can be mixed.
 `anyOf` works only as the value of `type`; `{ id: { anyOf: [String, Number] } }` defines a nested object with a property named `anyOf`.
 `[String, Number]` as a property value still defines an array, not a union.
+A custom `type` validator registered via `schema.validator('type', fn)` receives the whole `{ anyOf: [...] }` object as its `type` argument.
 
 ### Chainable API
 

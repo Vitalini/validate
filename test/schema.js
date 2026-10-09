@@ -181,6 +181,25 @@ describe('Schema', () => {
       expect(res[0].path).toBe('a.1');
     });
 
+    test('should keep a union containing Array when combined with each', () => {
+      const typeFirst = new Schema({ tags: { type: { anyOf: [String, Array] }, each: String } });
+      const eachFirst = new Schema({ tags: { each: String, type: { anyOf: [String, Array] } } });
+      const chained = new Schema();
+      chained.path('tags').type({ anyOf: [String, Array] }).each(String);
+
+      [typeFirst, eachFirst, chained].forEach(schema => {
+        expect(schema.validate({ tags: 'a' })).toHaveLength(0);
+        expect(schema.validate({ tags: ['a', 'b'] })).toHaveLength(0);
+        const element = schema.validate({ tags: ['a', 1] });
+        expect(element).toHaveLength(1);
+        expect(element[0].path).toBe('tags.1');
+        expect(element[0].message).toBe('tags.1 must be of type String.');
+        const res = schema.validate({ tags: 5 });
+        expect(res).toHaveLength(1);
+        expect(res[0].message).toBe('tags must be of type String or Array.');
+      });
+    });
+
     test('should work with $ a placeholder for array indices', () => {
       const schema = new Schema();
       schema.path('a.$.b').required();

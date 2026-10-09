@@ -149,6 +149,12 @@ describe('Property', () => {
       expect(prop.validate(true)).toBeInstanceOf(Error);
       expect(prop.validate(true).message).toBe(message);
     });
+
+    test('should throw on a malformed union', () => {
+      const prop = new Property('test', new Schema());
+      expect(() => prop.type({ anyOf: [] })).toThrow(TypeError);
+      expect(() => prop.type({ anyOf: 'string' })).toThrow('anyOf must be a non-empty array of types');
+    });
   });
 
   describe('.string()', () => {

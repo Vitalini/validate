@@ -127,6 +127,10 @@ export default class Property {
    */
 
   type(type) {
+    if (type && typeof type === 'object' && 'anyOf' in type &&
+      !(Array.isArray(type.anyOf) && type.anyOf.length)) {
+      throw new TypeError('anyOf must be a non-empty array of types');
+    }
     this._type = type;
     return this._register('type', [type]);
   }
