@@ -119,7 +119,10 @@ export default class Property {
    * @example
    * prop.type('string')
    *
-   * @param {String|Function} type - type to check for
+   * @example
+   * prop.type({ anyOf: [String, Number] })
+   *
+   * @param {String|Function|Object} type - type to check for, or `{ anyOf: [...] }` to accept any of the listed types
    * @return {Property}
    */
 
@@ -327,6 +330,7 @@ export default class Property {
     let type = this._type;
 
     if (!type) return value;
+    if (Array.isArray(type.anyOf)) return value;
 
     if (typeof type == 'function') {
       type = type.name;
